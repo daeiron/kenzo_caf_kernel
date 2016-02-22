@@ -8108,7 +8108,8 @@ static int tasha_config_compander(struct snd_soc_codec *codec, int interp_n,
 
 static int tasha_codec_config_mad(struct snd_soc_codec *codec)
 {
-	int ret, idx;
+	int ret = 0;
+	int idx;
 	const struct firmware *fw;
 	struct firmware_cal *hwdep_cal = NULL;
 	struct wcd_mad_audio_cal *mad_cal = NULL;
@@ -10690,6 +10691,8 @@ static int tasha_hw_params(struct snd_pcm_substream *substream,
 		case SNDRV_PCM_FORMAT_S24_LE:
 			tasha->dai[dai->id].bit_width = 24;
 			break;
+		default:
+			return -EINVAL;
 		}
 		tasha->dai[dai->id].rate = params_rate(params);
 		break;
@@ -11137,6 +11140,8 @@ static ssize_t tasha_codec_version_read(struct snd_info_entry *entry,
 			len = snprintf(buffer, sizeof(buffer), "WCD9335_1_0\n");
 		else if (TASHA_IS_1_1(wcd9xxx->version))
 			len = snprintf(buffer, sizeof(buffer), "WCD9335_1_1\n");
+		else
+			snprintf(buffer, sizeof(buffer), "VER_UNDEFINED\n");
 	} else if (wcd9xxx->codec_type->id_major == TASHA2P0_MAJOR) {
 			len = snprintf(buffer, sizeof(buffer), "WCD9335_2_0\n");
 	} else
