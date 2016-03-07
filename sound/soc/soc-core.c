@@ -2793,7 +2793,7 @@ int snd_soc_get_volsw_sx(struct snd_kcontrol *kcontrol,
 	unsigned int rshift = mc->rshift;
 	int max = mc->max;
 	int min = mc->min;
-	int mask = (1 << (fls(min + max) - 1)) - 1;
+	unsigned int mask = (unsigned int)(1 << (fls(min + max) - 1)) - 1;
 
 	ucontrol->value.integer.value[0] =
 	    ((snd_soc_read(codec, reg) >> shift) - min) & mask;
