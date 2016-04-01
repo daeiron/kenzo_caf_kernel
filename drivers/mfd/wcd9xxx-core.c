@@ -1,4 +1,5 @@
 /* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2016 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -34,6 +35,7 @@
 #include <linux/regmap.h>
 #include <sound/soc.h>
 #include "wcd9xxx-regmap.h"
+#include <linux/reboot.h>
 
 #define WCD9XXX_REGISTER_START_OFFSET 0x800
 #define WCD9XXX_SLIM_RW_MAX_TRIES 3
@@ -1033,6 +1035,11 @@ static int wcd9335_bring_up(struct wcd9xxx *wcd9xxx)
 		return -EINVAL;
 	}
 
+	if (val < 0 || byte0 < 0) {
+		pr_err("%s: some thing wrong with the codec restart target\n", __func__);
+		emergency_restart();
+	}
+
 	if ((val & 0x80) && (byte0 == 0x0)) {
 		dev_info(wcd9xxx->dev, "%s: wcd9335 codec version is v1.1\n",
 			 __func__);
@@ -1133,7 +1140,6 @@ static int wcd9xxx_reset(struct wcd9xxx *wcd9xxx)
 {
 	int ret;
 	struct wcd9xxx_pdata *pdata = wcd9xxx->dev->platform_data;
-
 
 	if (wcd9xxx->wcd_rst_np) {
 		/* use pinctrl and call into wcd-rst-gpio driver */
@@ -1313,6 +1319,11 @@ static const struct wcd9xxx_codec_type
 			 *version);
 	}
 exit:
+	if (rc < 0) {
+		pr_err("%s: some thing wrong with the codec restart target\n", __func__);
+		emergency_restart();
+	}
+
 	return d;
 }
 
@@ -2931,7 +2942,7 @@ static int wcd9xxx_slim_probe(struct slim_device *slim)
 		pr_err("%s: failed to get slimbus %s logical address: %d\n",
 		       __func__, wcd9xxx->slim->name, ret);
 		ret = -EPROBE_DEFER;
-		goto err_reset;
+		goto reboot;
 	}
 	wcd9xxx->read_dev = wcd9xxx_slim_read_device;
 	wcd9xxx->write_dev = wcd9xxx_slim_write_device;
@@ -2955,7 +2966,7 @@ static int wcd9xxx_slim_probe(struct slim_device *slim)
 		pr_err("%s: failed to get slimbus %s logical address: %d\n",
 		       __func__, wcd9xxx->slim->name, ret);
 		ret = -EPROBE_DEFER;
-		goto err_slim_add;
+		goto reboot;
 	}
 	wcd9xxx_inf_la = wcd9xxx->slim_slave->laddr;
 	wcd9xxx_set_intf_type(WCD9XXX_INTERFACE_TYPE_SLIMBUS);
@@ -3002,6 +3013,10 @@ err_codec:
 	kfree(wcd9xxx);
 	slim_set_clientdata(slim, NULL);
 err:
+	return ret;
+reboot:
+	pr_err("%s: some thing wrong with the codec - restart target\n", __func__);
+	emergency_restart();
 	return ret;
 }
 static int wcd9xxx_slim_remove(struct slim_device *pdev)
