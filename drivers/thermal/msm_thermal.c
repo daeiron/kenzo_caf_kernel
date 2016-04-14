@@ -2709,9 +2709,12 @@ static void __ref do_core_control(long temp)
 {
 	int i = 0;
 	int ret = 0;
+	uint32_t previous_cpus_offlined = 0;
 
 	if (!core_control_enabled || disable_core_control)
 		return;
+
+	previous_cpus_offlined = msm_thermal_info.cpus_offlined;
 
 	mutex_lock(&core_control_mutex);
 	if (msm_thermal_info.core_control_mask &&
@@ -2769,6 +2772,10 @@ static void __ref do_core_control(long temp)
 		}
 	}
 	mutex_unlock(&core_control_mutex);
+#ifdef CONFIG_STATE_HELPER
+	if (previous_cpus_offlined != msm_thermal_info.cpus_offlined)
+		reschedule_helper();
+#endif
 }
 /* Call with core_control_mutex locked */
 static int __ref update_offline_cores(int val)
@@ -2804,6 +2811,9 @@ static int __ref update_offline_cores(int val)
 			trace_thermal_post_core_offline(cpu,
 				cpumask_test_cpu(cpu, cpu_online_mask));
 		} else if (online_core && (previous_cpus_offlined & BIT(cpu))) {
+#ifdef CONFIG_STATE_HELPER
+			thermal_notify(cpu, 1);
+#endif
 			if (cpu_online(cpu))
 				continue;
 			/* If this core wasn't previously online don't put it
@@ -2833,6 +2843,10 @@ static int __ref update_offline_cores(int val)
 		schedule_delayed_work(&retry_hotplug_work,
 			msecs_to_jiffies(HOTPLUG_RETRY_INTERVAL_MS));
 	}
+#ifdef CONFIG_STATE_HELPER
+	if (previous_cpus_offlined != msm_thermal_info.cpus_offlined)
+		reschedule_helper();
+#endif
 
 	return ret;
 }
