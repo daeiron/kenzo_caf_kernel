@@ -26,5 +26,6 @@ $TOOLCHAIN/bin/aarch64-linux-android-strip --strip-unneeded build/out/system/lib
 mv build/out/system/lib/modules/wlan.ko build/out/system/lib/modules/pronto/pronto_wlan.ko
 ln -s /system/lib/modules/pronto/pronto_wlan.ko build/out/system/lib/modules/wlan.ko
 # Step 7 - Zip it up to build/dist
+mkdir -p build/dist
 cd build/out
 zip -yr ../../build/dist/kenzo_kernel_`date +%d-%m-%Y`.zip .
