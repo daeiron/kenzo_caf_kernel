@@ -456,7 +456,7 @@ static int goodix_fb_state_chg_callback(struct notifier_block *nb,
 			}
 			break;
 		default:
-			pr_info("%s defalut\n", __func__);
+			pr_info("%s default\n", __func__);
 			break;
 		}
 	}
