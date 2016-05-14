@@ -44,6 +44,10 @@
 #include <linux/device.h>
 #include "pmic-voter.h"
 
+#ifdef CONFIG_STATE_HELPER
+#include <linux/state_helper.h>
+#endif
+
 
 int FG_charger_status = 0;
 
@@ -1018,6 +1022,9 @@ static int get_prop_batt_capacity(struct smbchg_chip *chip)
 		pr_smb(PR_STATUS, "Couldn't get capacity rc = %d\n", rc);
 		capacity = DEFAULT_BATT_CAPACITY;
 	}
+#ifdef CONFIG_STATE_HELPER
+	batt_level_notify(chip->soc_now);
+#endif
 	return capacity;
 }
 
