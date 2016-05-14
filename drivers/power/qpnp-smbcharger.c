@@ -1023,7 +1023,7 @@ static int get_prop_batt_capacity(struct smbchg_chip *chip)
 		capacity = DEFAULT_BATT_CAPACITY;
 	}
 #ifdef CONFIG_STATE_HELPER
-	batt_level_notify(chip->soc_now);
+	batt_level_notify(capacity);
 #endif
 	return capacity;
 }
