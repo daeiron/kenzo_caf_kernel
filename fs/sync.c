@@ -18,7 +18,7 @@
 #include <linux/backing-dev.h>
 #include "internal.h"
 
-bool fsync_enabled = true;
+bool fsync_enabled = false;
 module_param(fsync_enabled, bool, 0755);
 
 #define VALID_FLAGS (SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE| \
@@ -186,7 +186,7 @@ int vfs_fsync_range(struct file *file, loff_t start, loff_t end, int datasync)
 {
 	if (!fsync_enabled)
 		return 0;
-		
+
 	if (!file->f_op || !file->f_op->fsync)
 		return -EINVAL;
 	return file->f_op->fsync(file, start, end, datasync);
