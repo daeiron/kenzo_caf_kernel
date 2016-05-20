@@ -76,7 +76,6 @@ struct gf_key_map key_map[] = {
 	{  "CLICK",  KEY_F19    },
 };
 
-
 /**************************debug******************************/
 #define GF_DEBUG
 /*#undef  GF_DEBUG*/
@@ -99,9 +98,7 @@ static DECLARE_BITMAP(minors, N_SPI_MINORS);
 static LIST_HEAD(device_list);
 static DEFINE_MUTEX(device_list_lock);
 static struct gf_dev gf;
-
 static int driver_init_partial(struct gf_dev *gf_dev);
-
 
 static void gf_enable_irq(struct gf_dev *gf_dev)
 {
@@ -268,9 +265,8 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 #ifdef AP_CONTROL_CLK
 	unsigned int speed = 0;
 #endif
-	if (_IOC_TYPE(cmd) != GF_IOC_MAGIC) {
+	if (_IOC_TYPE(cmd) != GF_IOC_MAGIC)
 		return -ENODEV;
-	}
 
 	if (_IOC_DIR(cmd) & _IOC_READ)
 		retval =
@@ -278,14 +274,13 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	if ((retval == 0) && (_IOC_DIR(cmd) & _IOC_WRITE))
 		retval =
 			!access_ok(VERIFY_READ, (void __user *)arg, _IOC_SIZE(cmd));
-	if (retval) {
+	if (retval)
 		return -EFAULT;
-	}
 
 	if (gf_dev->device_available == 0) {
 		if ((cmd == GF_IOC_POWER_ON) || (cmd == GF_IOC_POWER_OFF) || (cmd == GF_IOC_ENABLE_GPIO) || (cmd == GF_IOC_DISABLE_GPIO)) {
 			pr_info("power cmd\n");
-		} else{
+		} else {
 			pr_info("Sensor is power off currently. \n");
 			return -ENODEV;
 		}
@@ -343,7 +338,7 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			retval = -EFAULT;
 		}
 
-			break;
+		break;
 	case GF_IOC_CLK_READY:
 #ifdef AP_CONTROL_CLK
 		gfspi_ioctl_clk_enable(gf_dev);
@@ -414,7 +409,6 @@ static irqreturn_t gf_irq(int irq, void *handle)
 	if (gf_dev->async)
 		kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
 #endif
-
 	return IRQ_HANDLED;
 }
 
@@ -481,7 +475,7 @@ static int driver_init_partial(struct gf_dev *gf_dev)
 	gf_dev->device_available = 1;
 
 	/*get reset resource*/
-	gf_dev->reset_gpio = of_get_named_gpio(gf_dev->spi->dev.of_node, "goodix,gpio_reset", 0);
+	gf_dev->reset_gpio = of_get_named_gpio(gf_dev->spi->dev.of_node, "goodix, gpio_reset", 0);
 	if (!gpio_is_valid(gf_dev->reset_gpio)) {
 		pr_info("RESET GPIO is invalid.\n");
 		ret = -EIO;
@@ -496,7 +490,7 @@ static int driver_init_partial(struct gf_dev *gf_dev)
 	gpio_direction_output(gf_dev->reset_gpio, 1);
 
 	/*get irq resourece*/
-	gf_dev->irq_gpio = of_get_named_gpio(gf_dev->spi->dev.of_node, "goodix,gpio_irq", 0);
+	gf_dev->irq_gpio = of_get_named_gpio(gf_dev->spi->dev.of_node, "goodix, gpio_irq", 0);
 	pr_info("gf:irq_gpio:%d\n", gf_dev->irq_gpio);
 	if (!gpio_is_valid(gf_dev->irq_gpio)) {
 		pr_info("IRQ GPIO is invalid.\n");
@@ -514,15 +508,9 @@ static int driver_init_partial(struct gf_dev *gf_dev)
 
 
 	gf_dev->irq = gf_irq_num(gf_dev);
-#if 1
 	ret = request_threaded_irq(gf_dev->irq, NULL, gf_irq,
 			IRQF_TRIGGER_RISING | IRQF_ONESHOT,
 			"gf", gf_dev);
-#else
-	ret = request_irq(gf_dev->irq, gf_irq,
-			IRQ_TYPE_EDGE_RISING, /*IRQ_TYPE_LEVEL_HIGH,*/
-			"gf", gf_dev);
-#endif
 	if (!ret) {
 		enable_irq_wake(gf_dev->irq);
 		gf_disable_irq(gf_dev);
@@ -619,7 +607,6 @@ static int gf_release(struct inode *inode, struct file *filp)
 		gf_disable_irq(gf_dev);
 
 		if (gpio_is_valid(gf_dev->irq_gpio)) {
-			free_irq(gf_dev->irq, gf_dev);
 			gpio_free(gf_dev->irq_gpio);
 			pr_info("Goodix remove irq_gpio success\n");
 		}
@@ -627,11 +614,12 @@ static int gf_release(struct inode *inode, struct file *filp)
 			gpio_free(gf_dev->reset_gpio);
 			pr_info("Goodix remove reset_gpio success\n");
 		}
+
+		free_irq(gf_dev->irq, gf_dev);
 		/*power off the sensor*/
 		gf_dev->device_available = 0;
 		gf_power_off(gf_dev);
 	}
-
 	mutex_unlock(&device_list_lock);
 	FUNC_EXIT();
 	return status;
@@ -667,7 +655,6 @@ static void gf_reg_key_kernel(struct gf_dev *gf_dev)
 		pr_warn("Failed to register GF as input device.\n");
 }
 
-
 static struct class *gf_class;
 #if defined(USE_SPI_BUS)
 static int gf_probe(struct spi_device *spi)
@@ -678,10 +665,7 @@ static int gf_probe(struct platform_device *pdev)
 	struct gf_dev *gf_dev = &gf;
 	int status = -EINVAL;
 	unsigned long minor;
-#if 0
-	int ret;
-	struct regulator *vreg;
-#endif
+
 	FUNC_ENTRY();
 
 	/* Initialize the driver data */
@@ -730,6 +714,7 @@ static int gf_probe(struct platform_device *pdev)
 		if (gf_dev->input == NULL) {
 			dev_dbg(&gf_dev->input->dev, "Faile to allocate input device.\n");
 			status = -ENOMEM;
+			goto error;
 		}
 #ifdef AP_CONTROL_CLK
 		dev_info(&gf_dev->spi->dev, "Get the clk resource.\n");
