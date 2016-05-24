@@ -677,6 +677,7 @@ CONFIG_KSM=y
 # CPU
 #
 CONFIG_CPU_BOOST=y
+CONFIG_CPUSETS=y
 #
 # Screen
 #
