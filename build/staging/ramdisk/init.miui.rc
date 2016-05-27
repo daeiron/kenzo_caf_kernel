@@ -10,10 +10,10 @@ on init
     mount cgroup none /sys/fs/cgroup/freezer freezer
 
 on post-fs-data
-    mkdir /data/system/mcd 755 system system
+    mkdir /data/system 0775 system system
+    mkdir /data/system/mcd 0755 system system
     restorecon_recursive /data/system/mcd
 
-    seclabel u:r:vold:s0
 
 #mdbd
 service mdbd /sbin/mdbd
