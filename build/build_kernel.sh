@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # User defined variables (only edit this part)
-TOOLCHAIN=/home/thomas/android/toolchain/aarch64-linux-android-4.9
+TOOLCHAIN=/home/thomas/android/toolchains/aarch64-linux-android-4.9
 MYDEFCONFIG=kenzo_defconfig
 THREADS=5
 
