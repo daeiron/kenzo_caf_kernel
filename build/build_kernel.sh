@@ -25,7 +25,11 @@ find . -path ./build -prune -o -name '*.ko' -print | xargs cp -t build/out/syste
 $TOOLCHAIN/bin/aarch64-linux-android-strip --strip-unneeded build/out/system/lib/modules/*.ko
 mv build/out/system/lib/modules/wlan.ko build/out/system/lib/modules/pronto/pronto_wlan.ko
 ln -s /system/lib/modules/pronto/pronto_wlan.ko build/out/system/lib/modules/wlan.ko
-# Step 7 - Zip it up to build/dist
+# Copy old fingerprint HAL
+cp build/staging/system/lib/fpc_fingerprint_hal.so build/out/system/lib/fpc_fingerprint_hal.so
+mkdir -p build/out/system/lib64
+cp build/staging/system/lib64/fpc_fingerprint_hal.so build/out/system/lib64/fpc_fingerprint_hal.so
+# Step 8 - Zip it up to build/dist
 mkdir -p build/dist
 cd build/out
 zip -yr ../../build/dist/kenzo_kernel_`date +%d-%m-%Y`.zip .
