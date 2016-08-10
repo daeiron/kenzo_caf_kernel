@@ -1,0 +1,4 @@
+*.zip
+*.ko
+staging/kernel/Image
+staging/kernel/dt.img
