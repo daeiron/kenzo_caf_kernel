@@ -374,13 +374,12 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -Wno-maybe-uninitialized \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
 		   -std=gnu89 \
-		   -Wno-error=maybe-uninitialized \
 		   -fgcse-sm -fgcse-las -fgcse-after-reload \
 		   -pipe -DNDEBUG -fmodulo-sched -fmodulo-sched-allow-regmoves \
 		   -fgraphite -fgraphite-identity -floop-parallelize-all -floop-interchange -floop-block \
