@@ -17,8 +17,11 @@ export CROSS_COMPILE=$TOOLCHAIN/bin/aarch64-linux-android-
 if [ "$1" == "clean" ]; then
 	make clean
 fi
-if [ "$1" == "clobber" ]; then
-	make clobber
+if [ "$1" == "cleanall" ]; then
+	rm -rf build/dist/*
+	rm -rf build/staging/system/lib/modules/*
+	rm -rf build/staging/kernel/*
+	make clean
 fi
 
 # Step 2 - Make defconfig
