@@ -50,7 +50,6 @@
 		qcom,mdss-dsi-on-command = [
 				29 01 00 00 00 00 02 D6 01
 				29 01 00 00 00 00 02 35 00
-				29 01 00 00 00 00 02 55 00
 				05 01 00 00 14 00 02 29 00
 				05 01 00 00 78 00 02 11 00];
 		qcom,mdss-dsi-off-command = [05 01 00 00 96 00 02 28 00
@@ -58,8 +57,8 @@
 		cm,mdss-livedisplay-cabc-cmd = [
 			29 01 00 00 00 00 02 55 00];
 		cm,mdss-livedisplay-cabc-ui-value = <0x01>;
-		cm,mdss-livedisplay-cabc-image-value = <0x02>;
-		cm,mdss-livedisplay-cabc-video-value = <0x03>;
+		cm,mdss-livedisplay-cabc-image-value = <0x01>;
+		cm,mdss-livedisplay-cabc-video-value = <0x01>;
 		cm,mdss-livedisplay-sre-weak-value = <0x50>;
 		cm,mdss-livedisplay-sre-medium-value = <0x60>;
 		cm,mdss-livedisplay-sre-strong-value = <0x70>;
