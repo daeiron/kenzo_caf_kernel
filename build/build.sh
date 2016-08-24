@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # User defined variables (only edit this part)
-TOOLCHAIN=/home/thomas/android/toolchains/aarch64-linux-android-4.9-kernel
+TOOLCHAIN=/home/thomas/android/toolchains/aarch64-linux-android-4.9
 MYDEFCONFIG=cyanogenmod_kenzo_defconfig
 THREADS=6
 
